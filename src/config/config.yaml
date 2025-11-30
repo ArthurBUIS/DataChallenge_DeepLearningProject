@@ -1,0 +1,19 @@
+general:
+  seed: 42
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  models: models
+  submissions: submissions
+
+features:
+  baseline:
+    - full_text
+    - extended_tweet.entities.hashtags
+    - possibly_sensitive
+    - is_quote_status
+    - user.statuses_count
+    - user.favourites_count
+    - user.description
+    - user.created_at
