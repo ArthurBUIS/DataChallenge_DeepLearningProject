@@ -1,15 +1,48 @@
-import pandas as pd
-from datetime import datetime
+"""
+Fonctions pures de feature engineering :
+- add_account_age: dérive account_age_days à partir de user.created_at
+- add_hashtag_count: dérive n_hashtags à partir du champ extended_tweet.entities.hashtags
+"""
 
-def add_account_age(df):
-    now = datetime.utcnow()
-    df["account_age_days"] = pd.to_datetime(
-        df["user.created_at"], errors="coerce"
-    ).apply(lambda d: (now - d).days if pd.notnull(d) else 0)
+from datetime import datetime, timezone
+import pandas as pd
+
+def add_account_age(df, date_col="user.created_at"):
+    df = df.copy()
+
+    # Conversion en datetime
+    dates = pd.to_datetime(df[date_col], errors="coerce", utc=True)
+
+    # Maintenant tout est tz-aware en UTC
+    now = datetime.now(timezone.utc)
+
+    df["account_age_days"] = (now - dates).dt.days
+    df["account_age_days"] = df["account_age_days"].fillna(0).astype(int)
+
     return df
 
-def add_hashtag_count(df):
-    df["n_hashtags"] = df["extended_tweet.entities.hashtags"].apply(
-        lambda x: len(eval(x)) if isinstance(x, str) and x.startswith("[") else 0
-    )
+
+def add_hashtag_count(df, hashtag_col="extended_tweet.entities.hashtags"):
+    df = df.copy()
+    def safe_count(x):
+        # on gère les cas où la colonne est NaN, '', déjà list, ou str like "[]"
+        try:
+            if pd.isna(x):
+                return 0
+            if isinstance(x, list):
+                return len(x)
+            if isinstance(x, str):
+                # si c'est un JSON-like list string, on l'évalue prudemment
+                # NOTE: on suppose que le format est similaire à ton notebook ("[...]")
+                if x.strip().startswith("["):
+                    # utilisation de eval ici pour compatibilité avec ton ancien notebook
+                    # Si tu veux être plus sûr, remplacer par json.loads après nettoyage.
+                    return len(eval(x))
+                else:
+                    return 0
+            return 0
+        except Exception:
+            return 0
+
+    df["n_hashtags"] = df[hashtag_col].apply(safe_count)
     return df
