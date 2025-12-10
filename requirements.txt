@@ -3,3 +3,8 @@ numpy
 scikit-learn
 joblib
 pyyaml
+xgboost
+sentence-transformers
+torch       # si pas déjà présent (GPU build si possible)
+tqdm
+datetime

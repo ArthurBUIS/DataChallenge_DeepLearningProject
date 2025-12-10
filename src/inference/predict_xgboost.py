@@ -1,5 +1,5 @@
 """
-Inference du modèle baseline + génération de la submission Kaggle
+Inference du modèle xgboost + génération de la submission Kaggle
 """
 
 import pandas as pd
@@ -20,7 +20,7 @@ def main():
     X_kaggle["user.description"] = X_kaggle["user.description"].fillna("").astype(str)
 
     # --- 2) Chargement du modèle
-    model_path = "models/baseline_logreg_0.8089_20251202_140939.joblib"
+    model_path = "models/xgboost_tuned_0.8556_20251207_132527.joblib"
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Modèle introuvable : {model_path}")
 

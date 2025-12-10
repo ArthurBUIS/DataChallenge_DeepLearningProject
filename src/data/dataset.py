@@ -43,6 +43,20 @@ def load_dataset(split="train", feature_set="baseline", version="essential"):
             else:
                 X = pd.read_csv("data/raw/X_kaggle.csv")
                 y = None
+    elif version == "final":
+            if split == "train":
+                X = pd.read_csv("data/processed/X_train_final.csv")
+                y = pd.read_csv("data/processed/y_train_final.csv").iloc[:, 0]
+            else:
+                X = pd.read_csv("data/processed/X_kaggle_final.csv")
+                y = None
+    elif version == "embeddings":
+            if split == "train":
+                X = pd.read_csv("data/processed/X_train_embeddings.csv")
+                y = pd.read_csv("data/processed/y_train_final.csv").iloc[:, 0]
+            else:
+                X = pd.read_csv("data/processed/X_kaggle_embeddings.csv")
+                y = None
     else:   
         raise ValueError("Version du dataset non reconnue.")
 
